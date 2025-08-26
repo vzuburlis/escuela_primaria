@@ -1,0 +1,7 @@
+{
+    "template":"fullwidth",
+    "file": "contact",
+    "name": "Contact Page",
+    "preview":"src/core/block-templates/Contact.png",
+    "blocks": ["text","contact-form"]
+}

@@ -1,0 +1,185 @@
+<?=View::css('lib/CodeMirror/codemirror.css')?>
+<style>
+#main-wrapper>div{background:none!important;border:none;margin:0}
+.fm_dir{overflow: hidden;padding:10px;line-height:1.5;background:white;}
+.fm_dir a{color:#333; display:inline-flex}
+.fm_dir a:hover{color:#000}
+.f-icon{color:grey}
+.fm_file{overflow: hidden;}
+.g-btn{padding:6px}
+.CodeMirror{height:auto}
+#textarea{opacity:0;overflow:scroll;}
+</style>
+<?php
+$mode_ext = ['php' => 'php','html' => 'htmlmixed','htm' => 'htmlmixed','js' => 'javascript','css' => 'css'];
+$img_ext = ['jpg','jpeg','jfif','gif','png','svg','ico','tiff'];
+$basepath = substr($filepath, 0, strlen(realpath('')));
+if ($basepath != realpath('')) {
+    $filepath = realpath('');
+}
+$pathinfo = pathinfo($filepath);
+$ext = $pathinfo['extension'];
+
+$dirname = $pathinfo['dirname'];
+if (is_dir($filepath)) {
+    $dirname = $filepath;
+}
+if ($dirname == '') {
+    $dirname = '.';
+}
+$show_path = substr($filepath, 1 + strlen(realpath('')));
+$dirname = substr($dirname, 1 + strlen(realpath('')));
+
+?>
+
+<div style="display:grid; grid-template-columns: 250px 1fr;grid-gap:1em">
+
+  <div class="fm_dir" style="border:1px solid lightgrey;"></div>
+  <div class="fm_file">
+    <div class="wrapper"><strong><?=htmlentities($show_path)?></strong>
+<?php
+  FileManager::$sitepath = realpath(SITE_PATH);
+if (FileManager::allowedPath($dirname) && FileManager::allowedFileType($filepath)) {
+    if (in_array($ext, $img_ext)) {
+        ?>
+      <span class="g-btn btn-white" onclick="movefile('<?=$show_path?>')"><?=_('Rename')?></span>
+      <span class="g-btn error" onclick="deletefile('<?=$show_path?>')"><?=_('Delete')?></span>
+        <?php
+        echo '</div><img src="lzld/thumb?size=600&src=' . $show_path . '" style="max-width:400px">';
+    } elseif (is_dir($filepath) || $filepath == '') {
+      // do nothing
+    } else {
+        $value = htmlentities(file_get_contents($filepath)); ?>
+    <span class="g-btn" onclick="savefile('<?=$show_path?>')"><?=_('Save')?></span>
+    <span class="g-btn btn-white" onclick="movefile('<?=$show_path?>')"><?=_('Rename')?></span>
+    <span class="g-btn error" onclick="deletefile('<?=$show_path?>')"><?=_('Delete')?></span>
+    </div>
+    <textarea id="textarea"><?=$value?></textarea>
+
+        <?=View::script('lib/CodeMirror/codemirror.js')?>
+        <?=View::script('lib/CodeMirror/javascript.js')?>
+        <?=View::script('lib/CodeMirror/css.js')?>
+        <?=View::script('lib/CodeMirror/xml.js')?>
+        <?=View::script('lib/CodeMirror/htmlmixed.js')?>
+    
+    <script>
+    requiredRes = new Array()
+    var myCodeMirror = new Array();
+    var saveFilePath;
+
+    mirror = CodeMirror.fromTextArea(document.getElementById('textarea'),{
+        lineNumbers:true
+    });
+    </script>
+        <?php
+    }
+} elseif (!is_dir($filepath)) {
+    echo "<div class='alert'>Permission denied. You cannot read from this folder or file type</div>";
+}
+?>
+
+<script>
+var csrfToken = '<?=Form::getToken()?>';
+var dir_path='';
+updateDir("<?=$dirname?>");
+
+function updateDir(path) {
+  dir_path = path
+  g.get('fm/dir?path='+path, function(data){
+    file = JSON.parse(data).files
+    html = ''
+    for (i=0; i<file.length; i++) {
+      if(file[i].name=='dir') {
+        html += '<span onclick="admin/fm?f='+path+'/'+file[i].name+'">'+get_file_icon(file[i].ext)+' '+file[i].name+'</span><br>';
+      } else {
+        html += '<a href="admin/fm?f='+path+'/'+file[i].name+'">'+get_file_icon(file[i].ext)+'&nbsp;'+file[i].name+'</a><br>';
+      }
+    }
+    html += ' <span class="g-btn btn-white" onclick="createDir()"><?=__("+ Dir")?></span>'
+    html += ' <span class="g-btn btn-white" onclick="createFile()"><?=_("+ File")?></span>'
+    html += ' <span class="g-btn btn-white" onclick="document.getElementById(\'up_files\').click()"><i class="fa fa-upload"></i> <?=_("Upload")?></span>'
+    html += ' <input type="file" id="up_files" onchange="uploadFile()" style="opacity:0;position:absolute">';
+    document.getElementsByClassName('fm_dir')[0].innerHTML=html;
+  })
+}
+
+function get_file_icon(ext){
+  icons={txt:'file-text',php:'file-text',jpg:'image',png:'image',gif:'image'}
+  icon='file';
+  if(typeof icons[ext]!='undefined') icon = icons[ext];
+  if(ext=='') icon='folder-o';
+  return '<i class="fa fa-'+icon+' f-icon"></i>'
+}
+ 
+function createDir() {
+  path = prompt("Please enter the folder name", "New Folder");
+  if(path != null) {
+    g.loader()
+    g.post('fm/newfolder', {path:dir_path+'/'+path, formToken:csrfToken},function(msg){
+      g.loader(false);
+      alert(msg);
+      location.href = 'admin/fm?f='+dir_path
+    })
+  }
+}
+function createFile() {
+  path = prompt("Please enter new file name", 'File.txt');
+  if(path != null) {
+    g.loader()
+    g.post('fm/newfile', {path:dir_path+'/'+path, formToken:csrfToken},function(msg){
+      g.loader(false);
+      alert(msg);
+      location.href = 'admin/fm?f='+dir_path+'/'+path
+    })
+  }
+}
+function uploadFile() {
+  let fm=new FormData()
+  fm.append('uploadfiles', g.el('up_files').files[0]);
+  fm.append('formToken', csrfToken);
+  fm.append('path', dir_path);
+  fm.append('g_response', 'content');
+  g.loader()
+  g.ajax({url:"fm/upload",method:'POST',data:fm, fn: function (msg){
+    g.loader(false);
+    alert(msg);
+    location.href = 'admin/fm?f='+dir_path+'/'
+  }})
+}
+
+function savefile(path) {
+  g.loader()
+  g.post('fm/save', {contents:mirror.getValue(),path:path, formToken:csrfToken},function(msg){
+    g.loader(false);
+    alert(msg);
+  })
+}
+function movefile(path) {
+  new_path = prompt("Please enter new file path", path);
+  if(new_path != null) {
+    g.loader()
+    g.post('fm/move', {newpath:new_path, path:path, formToken:csrfToken},function(msg){
+      g.loader(false);
+      alert(msg);
+      location.href = 'admin/fm?f='+dir_path
+    })
+  }
+}
+function deletefile(path) {
+  if(confirm("Are you sure you want to remove this file?")) {
+    g.loader()
+    g.post('fm/delete', {path:path, formToken:csrfToken},function(msg){
+      g.loader(false)
+      if(msg!='') {
+        alert(msg)
+      } else {
+        location.href = 'admin/fm?f='+dir_path
+      }
+    })
+  }
+}
+</script>
+
+  </div>
+
+</div>

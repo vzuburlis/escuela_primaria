@@ -1,0 +1,66 @@
+{
+  "name":"Blog",
+  "version":"2.2.3",
+  "description":"Adds the blog controller.",
+  "lang":"core/lang/admin/",
+  "options": {
+    "title": {
+      "title": "Title on main page",
+      "title_es": "Titulo en pagina principal"
+    },
+    "show_categories": {
+      "type": "checkbox",
+      "title": "Show categories on main page",
+      "title_es": "Mostrar categorias en pagina principal"
+    },
+    "sidebar": {
+      "type": "checkbox",
+      "title": "Show sidebar",
+      "title_es": "Mostrar la barra lateral"
+    },
+    "post_header": {
+      "type": "select",
+      "options": {
+        "0": "No", "top": "Top", "center": "Center"
+      },
+      "title": "Display post header image",
+      "title_es": "Mostrar cabeza con la imagen"
+    },
+    "post_categories": {
+      "type": "checkbox",
+      "title": "Show categories on post page",
+      "title_es": "Mostrar categorias en post"
+    },
+    "post_author": {
+      "type": "checkbox",
+      "title": "Show author",
+      "title_es": "Mostrar autor"
+    },
+    "twitter_card": {
+      "type": "select",
+      "options": {
+        "summary": "Summary", "summary_large_image": "Large Image"
+      },
+      "title_es": "Mostrar tarjeta de twitter"
+    },
+    "twitter_site": [],
+    "cache": {
+      "title": "Cache",
+      "type": "select",
+      "options": {
+        "0": "-", "300": "5 min", "3600": "1 hour", "86400": "1 day"
+      }
+    },
+    "show_related": {
+      "title": "Related posts",
+      "type": "select",
+      "options": {
+        "": "No", "list": "List", "grid": "Grid"
+      },
+      "title_es": "Mostrar articulos relativos"
+    }
+  },
+  "require": {
+    "core": "2.2.0"
+  }
+}

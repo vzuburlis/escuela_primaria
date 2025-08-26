@@ -1,0 +1,462 @@
+body {
+  overflow-x:auto;
+}
+
+
+.table td div[contenteditable]{
+  outline: 1px solid lightgreen;
+}
+
+.table tbody tr{
+  border-bottom: 0;
+}
+.table tbody tr:hover td {
+  background: lightgrey;
+}
+
+.table tbody tr:hover .g-com {
+  opacity: 0.6;
+}
+
+.tr_checkbox, .bulk_checkbox {
+ margin: 0 6px;
+ max-width: 10px;
+ font-size: 140%;
+}
+
+.table .hightlight {
+  background: yellow;
+}
+
+.table .col-roles, .table .col-number {
+  text-align: right;
+}
+
+.table .col-hide {
+  display: none;
+}
+
+.table .col-group:before, .table .col-group-open:before {
+  font-family: FontAwesome;
+  font-size: 1.4em;
+  margin: 0 4px;
+  cursor: pointer;
+}
+
+.table .col-group:before {
+  content: "\f0fe";
+}
+
+.table .col-group-open:before {
+  content: "\f146";
+}
+
+.g-table h1 {
+  display: inline-block;
+  margin: 14px 0;
+}
+
+.table .detail-row h1 {
+  margin: 12px 0;
+  font-size: 22px;
+}
+
+.g-table tbody td {
+  background: #fff;
+  vertical-align:middle;
+}
+
+.g-table th, .g-table td {
+  padding: 10px 8px;
+  font-size: 14px;
+  border-collapse: collapse;
+}
+.table th.sorting {
+  padding-right: 16px;
+}
+.table th.sorting>i {
+  position:absolute;
+}
+
+.g-table tbody td {
+  border-top: 1px solid #ddd;
+}
+.table th {
+  border-bottom: 1px solid #bbb;
+}
+
+.g-dialog {
+  width: auto !important;
+  font-size: 15px;
+}
+
+.g-dialog .update-div {
+  width: 50%;
+  line-height: 1.4;
+  padding: 4px;
+  display: inline-flex;
+}
+
+.g-dialog .update-div:nth-child(odd) {
+  background: #e5e5e5
+}
+
+.g-dialog textarea {
+  width: 100%
+}
+
+.edit-dialog label {
+  width: 150px;
+  display: inline-block;
+}
+
+.g-edit {
+  width: 100%;
+  font-size: 15px;
+  text-align: left;
+}
+
+.g-edit .update-div {
+  display: inline-block;
+  width: 50%;
+  line-height: 1.4;
+  padding: 4px;
+  vertical-align: top;
+}
+
+/* max-height: 66%;*/
+
+.g-edit textarea {
+  width: 100%
+}
+
+.g-edit label {
+  width: 150px;
+  display: inline-block;
+}
+
+.update-div label {
+  vertical-align: top;
+}
+
+.update-div select {
+  max-width: 80%;
+}
+
+.table tbody .show-details {
+  background: #fff888;
+}
+
+.table tbody .detail-row td {
+  padding: 0;
+  padding-left: 10px;
+}
+
+.table tbody .detail-row {
+  border-bottom: 1px solid #ccc
+}
+
+.table .main-row:hover {
+  background: #f5f5f5;
+}
+
+.table td, .table th {
+  text-align: left;
+}
+
+.table th {
+  overflow: hidden;
+}
+
+.table td p {
+  margin: 0;
+}
+
+.g-tools {
+  margin-bottom: 8px;
+  margin-top: 8px;
+}
+
+.detail-row .g-tools button {
+  font-size: 15px;
+  padding: 8px;
+}
+
+.g-table .g-com {
+  font-size: 16px;
+  padding: 0 4px;
+  display: table-cell;
+  margin: 4px;
+  cursor: pointer;
+  border-width: 0;
+  opacity: 0.5;
+}
+
+.table tbody tr .g-com:hover {
+  opacity: 0.8;
+}
+
+.g-tool-active {
+  background: #fbf;
+}
+
+.grouping:hover, .sorting:hover {
+  cursor: pointer
+}
+
+tr.selecting td, tr.selecting td:hover {
+  background-color: #d0d0ff;
+}
+.g-table td:hover .qactions{
+  visibility:visible;
+}
+.qactions{
+  visibility:hidden;
+  margin-top:4px;
+}
+.qactions a{
+  cursor: pointer;
+  margin-right: 8px;
+}
+
+tr.selected td {
+  background-color: #d0d0ff!important;
+}
+
+.g-icon {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 4px;
+}
+
+.g-sorti {
+  opacity: 0.5;
+}
+
+th:hover .g-sorti, .sort-desc, .sort-asc {
+  opacity: 1;
+}
+
+td[col] .g-input {
+  margin: 0px;
+}
+
+.select2-container--default .select2-selection--single {
+  /* min-width:180px!important;*/
+  border-radius: 0 !important;
+  background: #FFFED1 !important;
+}
+
+.select2-container {
+  max-width: 80%;
+}
+
+.g-searchbox:not:first-child .g-input {
+  width: 120px;
+  padding: 11px;
+  font: 14px Arial;
+  transition: 0s;
+  margin: 0;
+}
+
+.g-searchbox .select2-container--default {
+  padding: 0px 5px;
+  margin: 0px 4px;
+}
+
+.g-searchbox {
+  position:relative;
+  display: inline-block;
+  margin: 6px;
+  padding: 0;
+  font-size: 15px;
+  text-align: left;
+  min-width: 120px;
+}
+.g-searchbox:nth-child(1) {
+  margin-left:0px;
+}
+
+.g-searchbox .g-input {
+  max-width:250px;
+}
+
+.bg-option {
+  border-radius: 2px;
+  padding: 3px;
+  margin: 0px 3px;
+  font-size: 13px
+}
+
+.grbut, .grbut, .sprht {
+  opacity: 0.2;
+  margin: 0 6px;
+}
+
+.grbut:hover, .sprht:hover {
+  opacity: 1;
+}
+
+.grouping:hover .grbut {
+  opacity: 1;
+}
+
+.nav li .partial-dr, .partial-dr-x:hover {
+  cursor: pointer
+}
+
+.w60 {
+  width: 60%;
+}
+
+.g-table tfoot .pagination, .g-table tfoot ul, .g-table thead ul {
+  margin: 6px 0;
+  float: right;
+}
+
+.g-pagination li,
+.g-table-pagination li {
+  list-style-type: none;
+  border: 1px solid #ccc;
+  display: inline-block;
+}
+.g-pagination a,
+.g-table-pagination a {
+  padding: 6px 8px;
+  color: #666;
+  border: 0;
+  font: 12px Arial;
+  display: inline-block;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+}
+.g-pagination .active a,
+.g-table-pagination .active a {
+  color: white;
+  background: steelblue;
+}
+.g-pagination li {
+  width:36px;
+  height:36px;
+}
+
+.g-form>div:nth-child(1) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+}
+
+.g-form>div:nth-child(1)>div {
+  margin: 3px 0px;
+}
+
+.g-form label {
+  padding: 6px;
+  margin: 6px;
+  font: 14px Arial;
+  font-weight: bold;
+}
+
+.edititem {
+  border: 1px solid lightgrey;
+  border-left: 4px solid lightgreen;
+  border-left-color: var(--admin-primary-color);
+  padding: 0.5em;
+  padding-left: 1.5em;
+}
+
+.edititem .g-table {
+  margin-top: 2em;
+}
+
+.g-sticky-thead{
+  position:sticky;
+  z-index:10;
+  height:50px;
+  top:50px;
+}
+
+.g-table .g-table, .g-form .g-table  {
+  margin-top: 1em;
+  grid-column: 1/-1;
+}
+
+.g-form .g-table-title {
+  margin-left: 0.5em;
+}
+.g-form .g-input {
+  width:100%;
+}
+.type-list .g-input {
+  width:auto;
+  margin:1px;
+}
+
+.g-table-title {
+  display: inline-block;
+  margin: 0;
+  vertical-align: middle;
+  font-weight: bold;
+  font-size: 1.3em;
+}
+
+.g-table-head {
+  margin: 0.8em 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.table .g-table-head {
+  margin: 0;
+}
+
+.g-table .com-btn {
+  cursor: pointer;
+  opacity: 0.8;
+  border:0;
+  display: inline-block;
+}
+
+.g-table .com-btn i:hover {
+  opacity: 0.8;
+}
+@media only screen and (min-width:1000px){
+  .g-table .com-btn i {
+    opacity: 0.5;
+  }
+}
+
+.td-com{
+  text-wrap: nowrap;
+}
+.pagination>li {
+  padding: 0.6em;
+  border-radius: 4px;
+  margin-left: 4px;
+  cursor: pointer;
+}
+
+.pagination>li.active {
+  background: lightgray;
+}
+
+.edit-item-form {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(60px,105px));
+  justify-content: space-between;
+  gap:0.8em;
+}
+.edit-item-form>div {
+  grid-column: span 3;
+}
+.edit-item-form>.g-table {
+  grid-column: 1/-1;
+}
+
+.g-fade-text, .g-fade-table-td td {
+  background-image: linear-gradient(90deg, #000 70%, transparent 100%)!important;
+  color:transparent!important;
+  -webkit-background-clip: text;
+  background-clip: text;
+  white-space: nowrap;
+}

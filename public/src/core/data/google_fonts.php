@@ -1,0 +1,20 @@
+<?php
+
+return ['Abril Fatface','Aclonica','Advent Pro','Anton',
+'Alfa Salab One','Archivo','Asap','Audiowide','Baumans','Bebas Neue',
+'Black Ops One','Bree Serif',
+'Calistoga','Cambria','Candara','Cardo','Cinzel','Century Gothic',
+'Consolas','Cookie','Cormorant',
+'Danfo','Dela Gothic One','Domine','Dosis','Garamond',
+'Fira Sans','Franklin Gothic','Fredoka One',
+'Georgia','GFS Didot','Gentium Basic','Gill Sans','Great Vibes',
+'Handlee','Helvetica','Indie Flower','Jaini','Jacquard 24 Charted',
+'Josefin Slab','Jura','Kanit','Lato','Lobster','Lora',
+'Mate SC','Monoton','Montserrat','Noto Sans','Nunito',
+'Old Standard TT','Open Sans','Orbitron','Oswald','Oxygen',
+'Pacifico','Patrick Hand','Play','Playwrite MX',
+'Prata','PT Serif','Poiret One','Philosopher',
+'Quicksand','Raleway','Righteous','Rockwell','Roboto','Roboto Condensed','Rozha One','Russo One',
+'Sacramento','Sail','Satisfy','Space Mono','Shojumaru','Special Elite',
+'Tahoma','Tangerine','Trebuchet MS','Ubuntu','Verdana','Voces','Vollkorn',
+'Yellowtail','Work Sans'];

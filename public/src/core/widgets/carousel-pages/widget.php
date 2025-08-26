@@ -1,0 +1,39 @@
+<?php
+
+return [
+  'fields' => [
+    'items-to-show' => [
+      'type' => 'number',
+      'default' => 3,
+    ],
+    'carousel-size' => [
+      'type' => 'range',
+    ],
+    'carousel-full-width' => [
+      'type' => 'radio',
+      'options' => [0 => 'No',1 => 'Si'],
+      'default' => 0
+    ],
+    'color-text' => [
+      'type' => 'color',
+    ],
+    'button-font-size' => [
+      'type' => 'select',
+      'options' => ['12' => 'Small','18' => 'Normal','25' => 'Big']
+    ],
+    'text-align' => [
+      'type' => 'select',
+      'options' => ['start' => 'Start','center' => 'Center','end' => 'End']
+    ],
+    'vertical-align' => [
+      'type' => 'range',
+    ],
+    'src' => [
+      'type' => 'select',
+      'options' => [
+        0 => Gila\Config::tr('Pages'), 'demo' => '--Demo--',
+      ]
+    ],
+  ],
+  'keys' => 'removed'
+];

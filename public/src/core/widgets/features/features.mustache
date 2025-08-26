@@ -1,0 +1,21 @@
+<div class="features-grid">
+{{# items }}
+  <div style="text-align:{{ text_align }}">
+    {{#orientation}}
+    <div data-image='{{image}}'
+    style="display:inline-block;max-width:100%"
+    class="gallery-item photo-{{orientation}} lazy"></div>
+    {{/orientation}}
+    {{^orientation}}
+    <img class="lazy" src='{{image}}' alt="">
+    {{/orientation}}
+    <h3>{{ name }}</h3>
+    <p class="inline-edit-">{{ description }}</p>
+    {{#url}}
+    <a href='{{url}}' target="{{ link_target }}" class='btn-features {{ link_type }}'>
+      {{ link_text }}
+    </a>
+    {{/url}}
+  </div>
+{{/ items }}
+</div>

@@ -1,0 +1,719 @@
+
+
+Vue.component('input-list', {
+    template: '<dir style="padding:0"><table class="g-table"><tbody>\
+<tr v-for="(row,key) in pos">\
+<td>\
+<span v-if="key>0" style="cursor:pointer;padding:0.5em 0.5em;color:black" @click="swap(key,key-1)">&uarr;</span>\
+<span v-else style="padding:0.5em 0.5em;opacity:0">&uarr;</span>\
+<span v-if="key<pos.length-1" style="cursor:pointer;padding:0.5em 0.5em;color:black" @click="swap(key,key+1)">&darr;</span>\
+<span v-else style="padding:0.5em 0.5em;opacity:0">&darr;</span>\
+</td>\
+<td>\
+<span v-for="(field,fkey,i) in fields">\
+  <span v-if="isMedia(field)" style="width:50px" >\
+    <img :src="imgSrc(pos[key][i])"  :onclick="\'open_media_gallery(\\\'#il\'+fkey+key+\'\\\')\'" style="width:50px;height:50px;vertical-align:middle" />\
+    <input v-model="pos[key][i]" type="hidden" :id="\'il\'+fkey+key" @input="update">\
+  </span>\
+  <select v-if="isSelect(field)" v-model="pos[key][i]" @change="update">\
+    <option v-for="(op,iv) in field.options" :value="iv">{{op}}</option>\
+  </select>\
+  <input v-if="isText(field)" v-model="pos[key][i]" @input="update"\
+  :placeholder="fkey.toUpperCase()" class="g-input">\
+</span>\
+</td>\
+<td>\
+<span @click="removeEl(key)" style="cursor:pointer;padding:0.5em 0.5em;color:black">&times;</span>\
+</td>\
+</tr>\
+</tbody></table>\
+<span @click="add()" style="cursor:pointer;padding:0.5em 0.5em;color:black">+ {{addTxt()}}</span>\
+<input v-model="ivalue" type="hidden" :name="name" >\
+</div>\
+',
+  props: ['name','value','fieldlist'],
+  data: function(){ 
+    return {
+      pos: JSON.parse(this.value),
+      fields: JSON.parse(this.fieldlist),
+      ivalue: this.value
+    }
+  },
+  methods:{
+    add: function(){
+      array = new Array()
+      for(i in this.fields) {
+        if(this.isMedia(this.fields[i])) {
+          array[i] = 'assets/core/photo.png'
+        } else array[i] = ''
+      }
+      this.pos.push(array)
+      this.update()
+    },
+    removeEl: function(index){
+      this.pos.splice(index,1)
+      this.update()
+    },
+    imgSrc: function(src) {
+      if(typeof src=='undefined') return 'assets/core/photo.png'
+      if(src.split('.').pop()=='svg' || src.startsWith('http:') || src.startsWith('https:')) {
+        return src;
+      }
+      if (src.startsWith('assets/') || src.startsWith('tmp/')) {
+        return src
+      }
+      return 'lzld/thumb?src='+src;
+    },
+    isMedia: function(field) {
+      if(field=='image') return true
+      return field.type=='media'
+    },
+    isText: function(field) {
+      if (this.isMedia(field) || this.isSelect(field)) return false
+      return true
+    },
+    isSelect: function(field) {
+      if(typeof field.options=='undefined') return false
+      return true
+    },
+    swap: function(x, y) {
+      tmp = this.pos[x]
+      this.pos[x] = this.pos[y]
+      this.pos[y] = tmp
+      this.update()
+    },
+    update: function() {
+      this.ivalue = JSON.stringify(this.pos)
+    },
+    beforeCreate: function(){
+      this.pos=JSON.parse(this.value)
+      this.ivalue = this.value
+    },
+    addTxt: function() {
+      return g.tr('Add') ?? 'Add'
+    }
+  }
+})
+
+Vue.component('input-media', {
+  template: `<div class="pointer:hover shadow:hover;" 
+  style="background:var(--main-input-color);max-width:100%;max-height:100%;display: grid;
+  justify-content:center; align-content:center; position:relative;min-width:70px;overflow: hidden;" 
+  @click="selectPhoto()" :style="{width:size+'px',height:size+'px'}">
+<img v-if="!value" src="assets/core/camera.svg" style="width:30px;margin:auto">
+<img v-if="value" :src="imgSrc(value)" style="max-width:100%;margin:auto">
+<svg v-if="value" height="28" width="28" @click.stop="value=null;return false;"
+style="position:absolute;right:0;top:0" viewBox="0 0 28 28">
+  <circle cx="14" cy="14" r="10" stroke-width="0" fill="#666"></circle>
+  <line x1="9" y1="9" x2="18" y2="18" style="stroke:#fff;stroke-width:3"></line>
+  <line x1="9" y1="18" x2="18" y2="9" style="stroke:#fff;stroke-width:3"></line>
+</svg>
+<svg width="28" height="28" viewBox="-6 -6 34 34" stroke-width="2.5" stroke="#fff" fill="none"
+style="position:absolute;right:0;bottom:0" stroke-linecap="round" stroke-linejoin="round" @click="editSrc();return false">
+  <circle cx="11.5" cy="11.5" r="12" stroke-width="0" fill="#666"></circle>
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 15l6 -6" />
+  <path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464" />
+  <path d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463" />
+</svg>
+<input v-model="value" type="hidden" :id="'imd'+idByName()" :name="name">
+<input type="file" ref="uploader" accept="image/*" multiple style="display:none" @change="uploadPhoto(this)">
+</div>`,
+  props: ['name','value','fieldset','size'],
+  data: function() {
+    if(typeof this.size=='undefined') this.size=70
+    return {
+      field: [],
+      value: this.value,
+      size: this.size
+    }
+  },
+  methods:{
+    editSrc: function() {
+      this.value = prompt(g.tr('File path',{es:'Ruta de archivo'}), this.value)
+    },
+    imgSrc: function(src) {
+      if (src.startsWith('assets/') || src.startsWith('tmp/')) {
+        return src
+      }
+      if(src.startsWith('http:') || src.startsWith('https:') || src.split('.').pop()=='svg') {
+        return src;
+      }
+      return 'lzld/thumb?media_thumb=120&src='+src;
+    },
+    idByName: function() {
+      id = this.name.replace("[", "_");
+      return id.replace("]", "_")
+    },
+    beforeCreate: function() {
+      if(typeof this.fieldset!=='undefined') {
+        this.field = JSON.parse(this.fieldset)
+      }
+    },
+    selectPhoto: function() {
+      open_media_gallery('#imd'+this.idByName())
+      //this.$refs['uploader'].click()
+    },
+    cleanThumb: function() {
+      _iUploadMedia=this
+      this.value='';
+      setTimeout(function () {
+        _iUploadMedia.inisrc='';
+        _iUploadMedia.value='';
+      }, 15);
+    },
+    uploadPhoto: function() {
+      let fm=new FormData()
+      _iUploadMedia=this
+      uploaded = this.$refs['uploader'].files[0]
+      fm.append('uploadfiles', uploaded);
+      this.value = true
+      var img=this.$refs['thumb']??this.$refs['thumb2']            
+      img.file = uploaded;    
+      var reader = new FileReader();
+      reader.onload = (function(aImg) { 
+          return function(e) { 
+              aImg.src = e.target.result; 
+          };
+      })(img);
+      reader.readAsDataURL(uploaded);
+
+      g.loader()
+      g.ajax({url:"user/uploadImage",method:'POST',data:fm, fn: function (data){
+        data = JSON.parse(data)
+        g.loader(false)
+       _iUploadMedia.value = data.image
+      }, error:function(data){
+        g.loader(false)
+        g.alert(data.error, 'danger')
+      }})
+    }
+  }
+})
+
+Vue.component('input-upload-file', {
+  template: '<div class="pointer:hover shadow:hover;" \
+  style="background:var(--main-input-color);max-width:100%;max-height:100%;display: grid;\
+  justify-content:center; align-content:center; position:relative;min-width:50px;overflow: hidden;"\
+  :style="{width:size+\'px\',height:size+\'px\'}" @click="selectPhoto(value)">\
+<img v-if="value" ref="thumb2" :src="imgSrc(inisrc)" style="max-width:100%;margin:auto">\
+<img v-else ref="thumb" :src="thumb" style="width:50%;max-width:100%;margin:auto">\
+<svg v-if="value" height="28" width="28" @click.stop="cleanThumb();return false"\
+style="position:absolute;right:0;top:0" viewBox="0 0 28 28">\
+  <circle cx="14" cy="14" r="10" stroke-width="0" fill="#666"></circle>\
+  <line x1="9" y1="9" x2="18" y2="18" style="stroke:#fff;stroke-width:3"></line>\
+  <line x1="9" y1="18" x2="18" y2="9" style="stroke:#fff;stroke-width:3"></line>\
+</svg>\
+<input v-model="value" type="hidden" :id="\'imd\'+idByName()" :name="name">\
+<input type="file" ref="uploader" accept="*/*" multiple style="display:none" @change="uploadPhoto(this)">\
+</div>\
+',
+  props: ['name','value','fieldset','size','thumb'],
+  data: function() {
+    if(typeof this.size=='undefined') this.size=70
+    if(typeof this.thumb=='undefined') this.thumb='assets/core/icons/file-upload.svg'
+    return {
+      field: [],
+      value: this.value,
+      inisrc: this.value,
+      size: this.size,
+      thumb: this.thumb,
+      remove: [],
+    }
+  },
+  methods:{
+    idByName: function() {
+      id = this.name.replace("[", "_");
+      return id.replace("]", "_")
+    },
+    beforeCreate: function() {
+      if(typeof this.fieldset!=='undefined') {
+        this.field = JSON.parse(this.fieldset)
+      }
+    },
+    cleanThumb: function() {
+      if(this.$refs['thumb']) {
+        this.$refs['thumb'].src = this.thumb
+      }
+      g.postJSON('user/removeFile', {src: this.value}, function (data){})
+      this.remove.push(this.value)
+      _iUploadMedia=this
+      this.value='';
+      setTimeout(function () {
+        _iUploadMedia.inisrc='';
+        _iUploadMedia.value='';
+      }, 15);
+    },
+    selectPhoto: function(src) {
+      if (src) {
+        window.open(src)
+      } else {
+        this.$refs['uploader'].click()
+      }
+    },
+    imgSrc: function(src) {
+      if (src.endsWith('.txt') || src.endsWith('.pdf')) {
+        return 'assets/core/icons/file-text.svg'
+      }
+      if (src.startsWith('assets/') || src.startsWith('tmp/')) {
+        return src
+      }
+      return 'lzld/thumb?media_thumb=120&src='+src
+    },
+    uploadPhoto: function() {
+      let fm=new FormData()
+      _iUploadMedia=this
+      uploaded = this.$refs['uploader'].files[0]
+      fm.append('uploadfiles', uploaded);
+      fm.append('removefiles', this.remove);
+      this.value = true
+      var img=this.$refs['thumb']??this.$refs['thumb2']            
+      img.file = uploaded;    
+      var reader = new FileReader();
+      reader.onload = (function(aImg) { 
+        return function(e) { 
+          aImg.src = e.target.result; 
+        };
+      })(img);
+      reader.readAsDataURL(uploaded);
+
+      g.loader()
+      g.ajax({url:'user/uploadFile',method:'POST',data:fm, fn: function (data){
+        data = JSON.parse(data)
+        g.loader(false)
+        _iUploadMedia.value = data.image
+        _iUploadMedia.inisrc = data.image
+      }, error:function(data){
+        g.loader(false)
+        g.alert(data.error, 'error')
+      }})
+    }
+  }
+})
+
+Vue.component('input-gallery', {
+  template: '<div><div v-if="upload==1" style="display: flex; overflow-x:scroll; height:90px; gap: 0.5em; width: 100%;\
+grid-template-columns: repeat(auto-fit,minmax(50px,70px));\
+grid-template-rows: repeat(auto-fit, 70px);">\
+  <input-upload-media v-for="(src,i) in sources" :value="src" :name="name+\'[\'+i+\']\'"></div>\
+  <div  v-else style="display: flex; overflow-x:scroll; height:90px; gap: 0.5em; width: 100%;\
+grid-template-columns: repeat(auto-fit,minmax(50px,70px));\
+grid-template-rows: repeat(auto-fit, 70px);">\
+  <input-media v-for="(src,i) in sources" :value="src" :name="name+\'[\'+i+\']\'"></div>\
+</div>',
+  props: ['name','value','upload'],
+  data: function() {
+    return {
+      sources: JSON.parse(this.value)
+    }
+  }
+})
+
+Vue.component('input-files', {
+  template: '<div><div style="display: grid; gap: 0.5em; width: 100%;\
+grid-template-columns: repeat(auto-fit,minmax(50px,70px));\
+grid-template-rows: repeat(auto-fit, 70px);">\
+  <input-upload-file v-for="(src,i) in sources" :value="src" :name="name+\'[\'+i+\']\'"></div>\
+</div>',
+  props: ['name','value','upload'],
+  data: function() {
+    return {
+      sources: JSON.parse(this.value)
+    }
+  }
+})
+
+
+Vue.component('g-multiselect', {
+  template: '<div :id="\'gm-\'+name+value" style="padding:var(--main-padding);min-width:180px;cursor:pointer;\
+  position:relative" class="form-control" @click="dropdown=!dropdown">\
+  <span v-if="values.length==0" style="opacity:0.5">{{placetext}}</span>\
+  <span v-for="(value,i) in values" @click="toggle(value)"\
+  style="color:white;background:var(--main-primary-color);margin:2px;padding:3px;border-radius:6px">\
+  &times; {{opList[value]}}</span>&nbsp;\
+  <div v-if="dropdown" style="position:absolute; min-width:160px; padding:0;\
+  margin:12px -12px;border:1px solid lightgrey; z-index:2;\
+  background:white;">\
+  <div style="float:right;font-size:150%;margin:0 4px;max-height:300px;overflow:auto" @click.stop="dropdown=false">&times;</div>\
+  <div v-for="(op,i) in opList" style="padding:0 6px" @click="toggle(i)" v-html="optionDisplay(op,i)"></div>\
+  </div>\
+  <input v-for="(v,i) in values" type="hidden" :value="v" :name="name+\'[\'+i+\']\'">\
+  <input v-if="values.length==0" type="hidden" value="" :name="name">\
+</div>',
+  props: ['name','value','options','placeholder'],
+  data: function() {
+    values = JSON.parse(this.value)??[]
+    if (values.length==1 && values[0]=='') values=[] 
+    return {
+      values: values,
+      placetext: this.placeholder??'...',
+      opList: JSON.parse(this.options),
+      dropdown: false
+    }
+  },
+  methods: {
+    toggle: function(i) {
+      var index = this.values.indexOf(i);
+      if (!Array.isArray(this.values)) this.values = []
+      if (index === -1) this.values.push(i); else this.values.splice(index, 1);
+      this.dropdown=false
+    },
+    optionDisplay: function(op,i) {
+      var index = this.values.indexOf(i);
+      if (index !== -1) op = op+" &#10003;";
+      return op
+    }
+  }
+})
+
+Vue.component('input-keywords', {
+  template: '<div :id="\'gm-\'+name+value" style="min-width:180px;cursor:pointer;\
+  background:var(--main-input-color);position:relative" @click="dropdown=!dropdown">\
+  <span v-if="values.length==0" style="opacity:0.5">{{placetext}}</span>\
+  <span v-for="(tag,i) in values" @click="toggle(tag)"\
+  style="color:white;background:var(--main-primary-color);display: inline-block;\
+  margin:6px;padding:4px;border-radius:4px;word-break: break-all;">\
+  &times; {{tag}}</span>&nbsp;\
+  <input v-model="newTag" @keypress.stop="keyPressed($event)"\
+  style="border-bottom:1px solid rgba(0,0,0,0.5)">\
+  <div v-if="dropdown && tagList.length>0" style="position:absolute; min-width:160px; padding:0;\
+  margin:12px -12px;border:1px solid lightgrey; z-index:1;\
+  background:white;">\
+  <div style="float:right;font-size:150%;margin:0 4px" @click.stop="dropdown=false">&times;</div>\
+  <div v-for="tag in tagList" style="padding:6px" @click="toggle(tag)" v-html="tagDisplay(tag)"></div>\
+  </div>\
+  <input v-for="(v,i) in values" type="hidden" :value="v" :name="name+\'[\'+i+\']\'">\
+  <input v-if="values.length==0" type="hidden" value="" :name="name">\
+</div>',
+  props: ['name','value','keywords','placeholder'],
+  data: function() {
+    return {
+      values: JSON.parse(this.value)??[],
+      placetext: this.placeholder?this.placeholder:' ...',
+      tagList: this.keywords? this.keywords.split(','): [],
+      dropdown: false,
+      newTag: ''
+    }
+  },
+  methods: {
+    toggle: function(i) {
+      var index = this.values.indexOf(i);
+      if (index === -1) this.values.push(i); else this.values.splice(index, 1);
+      this.dropdown=false
+    },
+    tagDisplay: function(tag) {
+      var index = this.values.indexOf(tag);
+      if (index !== -1) tag = tag+" &#10003;";
+      return tag
+    },
+    keyPressed: function(event) {
+      var i = this.newTag.trim()
+      if(['Enter'].includes(event.key)) {
+        var index = this.values.indexOf(i);
+        if (index === -1) this.values.push(i);
+        this.newTag = ''
+      } else if(event.key!=',') {
+        this.newTag += event.key
+      }
+      event.preventDefault()
+    },
+    valuesSplit: function() {
+      return this.values.split()
+    }
+  }
+})
+
+Vue.component('color-palette', {
+  template: '<div style="">\
+  <input type="color" v-for="(color,i) in colors" :value="color" v-model="colors[i]" @change="custom()" :title="labelList[i]">\
+  <br><span v-for="(palette,i) in paletteList" @click="changePalette(i)" style="border:1px solid lightgrey;cursor:pointer;padding:2px 6px;" :class="{\'g-selected\':i==selected}">\
+  <span v-if="i<paletteList.length-1">{{i+1}}</span><span v-else>★</span></span>\
+  <input v-model="value" type="hidden" :id="\'imd\'+idByName()" :name="name">\
+</div>',
+  props: ['name','value','palettes','labels'],
+  data: function() {
+    labels = ['','','','','','','','','']
+    palettes = null
+    if(this.palettes) palettes = JSON.parse(this.palettes)
+    if(this.labels) labels = JSON.parse(this.labels)
+    return {
+      colors: JSON.parse(this.value),
+      paletteList: palettes,
+      labelList: labels,
+      selected: palettes.length-1
+    }
+  },
+  methods:{
+    idByName: function() {
+      id = this.name.replace("[", "_");
+      return id.replace("]", "_")
+    },
+    changePalette: function(i) {
+      this.selected=i
+      this.colors = this.paletteList[this.selected].map((x) => x);
+    },
+    custom: function() {
+      this.selected = this.paletteList.length-1
+      this.paletteList[this.selected] = this.colors.map((x) => x);
+    }
+  },
+  updated: function() {
+    this.value = JSON.stringify(this.colors)
+  }
+})
+
+Vue.component('tree-select', {
+  template: '<div>\
+  <select v-model="selectValue" @change="selected()">\
+    <option v-if="level>0" value".." key="-1">←</option>\
+    <option v-for="(op,i) in options" :value"op.id" :key="i">{{op.label}}</option>\
+  </select>\
+  <input v-model="value" type="hidden" :name="name">\
+</div>',
+  props: ['name','value','data'],
+  data: function() {
+    selected = [null]
+    if(this.value) {
+      selected = JSON.parse(this.value)
+    }
+    data = JSON.parse(this.data)
+
+    return {
+      level: selected.length,
+      treeData: data,
+      options: data,
+      selected: selected,
+      selectValue: null
+    }
+  },
+  methods:{
+    selected: function() {
+      if(this.selected[this.level-1]=='..') {
+        this.level--
+        this.selected[this.level-1] = null
+      }
+      this.updateOpList()
+    },
+    updateOpList: function () {
+      options = this.treeData
+      for(i=0; i<level-1; i++) {
+        for(child in options) if(child.id==this.selected[i]) {
+          options = options[i].children
+          break
+        }
+      }
+      return options
+    }
+  },
+  updated: function() {
+    this.value = JSON.stringify(this.selected)
+  }
+})
+
+Vue.component('activity-log', {
+  template: '<div class="container mt-5 mb-5">\
+  <style>\
+  ul.timeline {list-style-type: none;position: relative;}\
+  ul.timeline:before {content: " ";background: #d4d9df;display: inline-block;position: absolute;left: 29px;width: 2px;height: 100%;z-index: 400;}\
+  ul.timeline > li {margin: 20px 0;padding-left: 20px;}\
+  ul.timeline > li:before {content: " ";background: white;display: inline-block;position: absolute;border-radius: 50%;border: 3px solid #22c0e8;left: 20px;width: 20px;height: 20px;z-index: 400;}\
+  </style>\
+  <div class="row">\
+    <div class="col-md-6 offset-md-3">\
+      <h4>Latest News</h4>\
+      <ul class="timeline">\
+        <li v-for="log in logs">\
+          <a target="_blank" href="#">{{log.name}}</a>\
+          <a href="#" class="float-right">{{log.date}}</a>\
+          <p>{{log.description}}</p>\
+        </li>\
+      </ul>\
+      <span v-if="logs.length==0">No activities yet</span>\
+    </div>\
+  </div>\
+</div>',
+  props: ['src','id'],
+  data: function() {
+    return {
+      logs: {}
+    }
+  },
+  mounted: function() {
+    this.logs = []
+    _this = this
+    g.getJSON('cm/listAll/'+this.src+'?content_id='+this.id, function(data) {
+      console.log(data)
+      _this.logs = data
+    })
+  }
+})
+
+
+Vue.component('v-select-ajax', {
+  template: '<div>\
+  <input type="hidden" :name="name" ref="inpt" :value="value">\
+  <v-select v-model="value" :filterable="false" :options="options" @search="onSearch"\
+  @input="updateValue()" :reduce="op=>op.id">\
+    <template slot="no-options">\
+      '+g.tr('type to search',{es:'Busca'})+'..\
+    </template>\
+    <template slot="option" slot-scope="option">\
+      <div style="display: flex;align-items: center;">\
+        <img v-if="option.image" :src="option.image"\
+        style="height: auto;max-width: 2.5rem;max-height: 2rem;margin-right: 1rem;">\
+        {{ option.name }}{{ option.title }}\
+        </div>\
+    </template>\
+    <template slot="selected-option" slot-scope="option">\
+      <div style="width: auto;max-height: 23px;margin-right: 0.5rem;display: flex;align-items: center;">\
+        <img v-if="option.image" :src="option.image"\
+        style="height: auto;max-width: 2.5rem;max-height: 23px;margin-right: 1rem;">\
+        {{ option.name }}{{ option.title }}\
+      </div>\
+    </template>\
+  </v-select>\
+</div>',
+  props: ['src','value','name','d'],
+  data: function() {
+    return {
+      options: [JSON.parse(this.d), {id:0,name:'-'}],
+      value: this.value,
+      name: this.name,
+    }
+  },
+  methods: {
+    onSearch(search, loading) {
+      if(search.length) {
+        loading(true);
+        this.search(loading, search, this);
+      }
+    },
+    search(loading, search, vm)  {
+      g.getJSON(this.src+encodeURIComponent(search), function(json){
+        vm.options = json.items;
+        loading(false);
+      })
+    },
+    updateValue: function () {
+      console.log(this.value)
+      this.$refs.inpt.value = this.value
+    }
+  }
+})
+
+Vue.component('g-audio', {
+  template: `<span @click="$refs.player.play()" type=button>
+  <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-volume" width="38" height="38" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+    <path d="M15 8a5 5 0 0 1 0 8" />
+    <path d="M17.7 5a9 9 0 0 1 0 14" />
+    <path d="M6 15h-2a1 1 0 0 1 -1 -1v-4a1 1 0 0 1 1 -1h2l3.5 -4.5a.8 .8 0 0 1 1.5 .5v14a.8 .8 0 0 1 -1.5 .5l-3.5 -4.5" />
+  </svg>
+  <audio  ref="player" controls style="position:absolute;opacity:0">
+    <source v-if="src.endsWith('.ogg')" :src="src" type="audio/ogg">
+    <source v-else :src="src" type="audio/mp3">
+  </audio>
+  </span>`,
+  props: ['src'],
+  data: function() {
+    return {
+      src: this.src,
+    }
+  },
+})
+
+Vue.component('input-upload-media', {
+  template: `<div class="pointer:hover shadow:hover;" 
+  style="background:var(--main-input-color);max-width:100%;max-height:100%;display: grid;
+  justify-content:center; align-content:center; position:relative;min-width:50px;overflow: hidden;"
+  :style="{width:size+'px',height:size+'px'}" @click="selectPhoto()">
+<img v-if="value" ref="thumb2" :src="imgSrc(inisrc)" style="max-width:100%;margin:auto">
+<img v-else ref="thumb" :src="thumb" style="width:50%;max-width:100%;margin:auto">
+<svg v-if="value" height="28" width="28" @click.stop="cleanThumb();return false"
+style="position:absolute;right:0;top:0" viewBox="0 0 28 28">
+  <circle cx="14" cy="14" r="10" stroke-width="0" fill="#666"></circle>
+  <line x1="9" y1="9" x2="18" y2="18" style="stroke:#fff;stroke-width:3"></line>
+  <line x1="9" y1="18" x2="18" y2="9" style="stroke:#fff;stroke-width:3"></line>
+</svg>
+<input v-model="value" type="hidden" :id="\'imd\'+idByName()" :name="name">
+<input type="file" ref="uploader" accept="image/*" multiple style="display:none" @change="uploadPhoto(this)">
+</div>
+`,
+  props: ['name','value','fieldset','size','thumb'],
+  data: function() {
+    if(typeof this.size=='undefined') this.size=70
+    if(typeof this.thumb=='undefined') this.thumb='assets/core/camera.svg'
+    return {
+      field: [],
+      value: this.value,
+      inisrc: this.value,
+      size: this.size,
+      thumb: this.thumb,
+      remove: [],
+    }
+  },
+  methods:{
+    idByName: function() {
+      id = this.name.replace("[", "_");
+      return id.replace("]", "_")
+    },
+    beforeCreate: function() {
+      if(typeof this.fieldset!=='undefined') {
+        this.field = JSON.parse(this.fieldset)
+      }
+    },
+    cleanThumb: function() {
+      if(this.$refs['thumb']) {
+        this.$refs['thumb'].src = this.thumb
+      }
+      g.postJSON('user/removeImage', {src: this.value}, function (data){})
+      this.remove.push(this.value)
+      _iUploadMedia=this
+      this.value='';
+      setTimeout(function () {
+        _iUploadMedia.inisrc='';
+        _iUploadMedia.value='';
+      }, 15);
+    },
+    selectPhoto: function() {
+      this.$refs['uploader'].click()
+    },
+    imgSrc: function(src) {
+      if (src.startsWith('assets/') || src.startsWith('tmp/')) {
+        return src
+      }
+      return 'lzld/thumb?media_thumb=120&src='+src
+    },
+    uploadPhoto: function() {
+      let fm=new FormData()
+      _iUploadMedia=this
+      uploaded = this.$refs['uploader'].files[0]
+      fm.append('uploadfiles', uploaded);
+      fm.append('removefiles', this.remove);
+      this.value = true
+      var img=this.$refs['thumb']??this.$refs['thumb2']            
+      img.file = uploaded;    
+      var reader = new FileReader();
+      reader.onload = (function(aImg) { 
+        return function(e) { 
+          aImg.src = e.target.result; 
+        };
+      })(img);
+      reader.readAsDataURL(uploaded);
+
+      g.loader()
+      g.ajax({url:'user/uploadImage',method:'POST',data:fm, fn: function (data){
+        data = JSON.parse(data)
+        g.loader(false)
+        g.ajax({url:'user/resizeImage',method:'POST',data:{image:data.image}, fn: function(){
+          // resize after upload to reduce the delay for user
+        }});
+        _iUploadMedia.value = data.image
+      }, error:function(data){
+        g.loader(false)
+        g.alert(data.error, 'danger')
+      }})
+    }
+  }
+})
+

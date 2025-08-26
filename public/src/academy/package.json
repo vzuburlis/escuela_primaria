@@ -1,0 +1,35 @@
+{
+  "name":"School management",
+  "description":"Subjects, gradebook, academic years",
+  "version":"1.0.0",
+  "permissions":{
+    "teacher":"Maestro",
+    "student":"Estudiante",
+    "parent":"Padre",
+    "edit_subjects":"Edit subjects",
+    "edit_students":"Edit students",
+    "edit_teachers":"Edit teachers",
+    "edit_parents":"Edit parents",
+    "see_grades":"See academic grades",
+    "enter_grades":"Edit academic grades"
+  },
+  "options":{
+    "student_role": {
+      "type": "admin_role",
+      "permission": "student"
+    },
+    "teacher_role": {
+      "type": "admin_role",
+      "permission": "teacher"
+    },
+    "parent_role": {
+      "type": "admin_role",
+      "permission": "parent"
+    },
+    "student_ogrades": {
+      "title": "Mostrar calificaciones con CURP de estudiante",
+      "type": "select",
+      "options": {"0":"No", "1":"Si", "2":"CURP y PIN"}
+    }
+  }
+}

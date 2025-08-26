@@ -1,0 +1,18 @@
+<div class="gm-grid container cards-grid">
+{{#posts}}
+<a class="text-decoration-none" href="{{href}}">
+  <div style="width:100%;max-width:300px;">
+    {{#img}}
+    <div class="g-card-image" style="display:inline-block;width:100%">
+      <img class="lazy" data-src="{{img_thumb}}" src="" alt="">
+    </div>
+    {{/img}}
+    <div style="text-align:{{text_align}}">
+    <h3 style="margin:2px"><b>{{title}}</b></h3>
+    <p style="opacity:0.66;margin:auto;font-size:90%">{{date}}</p>
+    <p class="post-description">{{description}}</p>
+    </div>
+  </div>
+</a>
+{{/posts}}
+</div>

@@ -1,0 +1,7 @@
+{
+    "template":"fullwidth",
+    "file":"homepage",
+    "name":"Homepage",
+    "preview":"src/core/block-templates/Homepage.png",
+    "blocks": ["image-overlay","side-image","google-map"]
+}

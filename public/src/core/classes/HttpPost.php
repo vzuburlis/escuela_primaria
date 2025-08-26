@@ -1,0 +1,123 @@
+<?php
+
+/*!
+ * This file is part of Gila CMS
+ * Copyright 2017-25 Vasileios Zoumpourlis
+ * Licensed under BSD 3-Clause License
+ */
+namespace Gila;
+
+class HttpPost
+{
+    private static $prefix = [];
+    private $body;
+    public $header = '';
+
+    public function __construct($url, $data = [], $args = [], $name = null)
+    {
+        if (is_string($args)) {
+            $name = $args;
+            $args = [];
+        }
+        $content_type = $args['type'] ?? ($prefix[$name]['type'] ?? 'json');
+        $ignore_error = $args['ignore_errors'] ?? ($prefix[$name]['ignore_errors'] ?? true);
+        $headers = $args['headers'] ?? ($args['header'] ?? ($prefix[$name]['headers'] ?? []));
+        if ($_data = @self::$prefix[$name]['data']) {
+            $data = array_merge($_data, $data);
+        }
+        if ($_get = @self::$prefix[$name]['params']) {
+            $q = http_build_query($_get);
+            $url .= strpos($url, "?") ? '&' . $q : '?' . $q;
+        }
+        if ($_url = @$data['url']) {
+            $url = $_url . $url;
+        }
+        $header_str = '';
+        foreach ($headers as $k => $h) {
+            $header_str .= $k . ': ' . $h . "\r\n";
+        }
+        if (!isset($headers['content-type'])) {
+            $header_str = "Content-type: application/$content_type\r\n" . $header_str;
+        }
+
+        $options = [
+        'http' => [
+        'method'  => $args['method'] ?? 'POST',
+        'header'  => $header_str,
+        'content' => ($content_type === 'json' ? json_encode($data, JSON_UNESCAPED_UNICODE) : http_build_query($data)),
+        'ignore_errors' => $ignore_error
+        ]
+        ];
+
+        $context = stream_context_create($options);
+        $this->body = file_get_contents($url, false, $context);
+        $this->header = $http_response_header;
+    }
+
+    public function new__construct($url, $post = [], $args = [], $name = null)
+    {
+        if (is_string($args)) {
+            $name = $args;
+            $args = [];
+        }
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        $headers = $args['headers'] ?? ($args['header'] ?? (self::$prefix[$name]['headers'] ?? []));
+        $header_arr = [];
+        foreach ($headers as $k => $h) {
+            $header_arr[] = $k . ': ' . $h;
+        }
+        $content_type = $args['type'] ?? (self::$prefix[$name]['type'] ?? 'json');
+        if (!isset($headers['content-type'])) {
+            $header_arr[] = "Content-type: application/$content_type";
+        }
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header_arr);
+
+        if (!empty($post)) {
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($post));
+        }
+        $res = curl_exec($ch);
+        curl_close($ch);
+        file_put_contents('log/open_ai_response.txt', $res);
+        $data = json_decode($res);
+    }
+
+    public function body()
+    {
+        return $this->body;
+    }
+
+    public function json()
+    {
+        return json_decode(trim($this->body)) ?? null;
+    }
+
+    public function header($key = null)
+    {
+        if ($key === null) {
+            return $this->header;
+        }
+        foreach ($this->header as $header) {
+            if (strpos($header, $key) !== false) {
+                $pos = strlen($key);
+                if ($header[$pos] === ':') {
+                    $pos++;
+                }
+                return trim(substr($header, $pos));
+            }
+        }
+        return null;
+    }
+
+    public static function set($key, $prefixes)
+    {
+        self::$prefix[$key] = $prefixes;
+    }
+}
+
+
+/* Examples
+new HttpPost('https://hooks.slack.com/services/xxxxxxxx',['text'=>"Slack bot msg"]);
+ */

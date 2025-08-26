@@ -1,0 +1,228 @@
+{
+  "name":"Unique",
+  "version":"1.0.0",
+  "description":"A simple blog tempelate.",
+  "url":"https://gilacms.com",
+  "require": {
+  	"core": "2.0.0",
+  	"content-vue": "1.0.0",
+  	"geoplugin": "1.0.0"
+  },
+  "options": {
+    "logo": {
+      "type": "media2", "group": "logo",
+      "input_style":"grid-column:span 1"
+    },
+    "logo-size": {
+      "type": "select", "group": "logo", "default": "50px",
+      "options": {"40px": "40px", "50px": "50px", "60px": "60px", "80px": "80px", "100px": "100px", "120px": "120px"},
+      "input_style":"grid-column:span 1"
+    },
+    "title": {
+      "group": "logo", "maxlength": 28
+    },
+    "title-color": {
+      "type":"color", "default":"var(--hcolor)", "input_type": "color-input", "group": "logo",
+      "palette":["var(--main-primary-color)","var(--main-a-color)","var(--hcolor)","var(--bcolor)"]
+    },
+    "menu-align": {
+      "type": "radio", "default":"center", "group": "header",
+      "options": {"left": "Left", "center": "Center", "right": "Right"}
+    },
+    "menu": {
+      "type": "menu", "default":"#333", "group": "menu"
+    },
+    "announcement-text": {
+      "title": "Announcement text",
+      "group": "topbar",
+      "allow_tags": true
+    },
+    "announcement-link": {
+      "group": "topbar"
+    },
+    "announcement-color": {
+      "title":"Background color",
+      "type":"color", "default":"#444", "input_type": "color-input", "group": "topbar",
+      "palette":["var(--main-primary-color)","var(--main-a-color)","var(--hcolor)","var(--bcolor)"]
+    },
+    "topbar-color": {
+      "title":"Text color",
+      "type":"color", "default":"#FFF", "input_type": "color-input", "group": "topbar",
+      "palette":["var(--main-primary-color)","var(--main-a-color)","var(--hcolor)","var(--bcolor)"]
+    },
+    "header-template": {
+      "type": "select", "default":"", "group": "header",
+      "options": {"": "Default", "centered-logo": "Centered logo", "centered": "Centered", "inverted": "Inverted", "bootstrap": "Bootstrap"}
+    },
+    "header-background-color": {
+      "type": "color", "input_type": "color-input",
+      "group": "header", "title": "Background color",
+      "default":"#FFFFFF",
+      "palette":["var(--main-primary-color)","var(--main-a-color)","var(--hcolor)","var(--bcolor)"]
+    },
+    "menu-color": {
+      "type": "color", "default":"#333", "group": "header",
+      "input_type": "color-input", "title": "Color",
+      "palette":["var(--main-primary-color)","var(--main-a-color)","var(--hcolor)","var(--bcolor)"]
+    },
+    "header-position": {
+      "type": "radio", "default":"sticky", "group": "header",
+      "options": {"sticky": "Sticky", "static": "Static", "side-fixed": "Side Fixed"}
+    },
+    "header-overlay": {
+      "type": "select", "default":"no", "group": "header",
+      "options": {"no": "No", "home": "Home", "all": "All"}
+    },
+    "menu-color2": {
+      "type": "color", "default":"var(--menu-color)", "group": "header", 
+      "input_type": "color-input","title": "Color (overlay)",
+      "palette":["var(--main-primary-color)","var(--main-a-color)","var(--hcolor)","var(--bcolor)"]
+    },
+    "user-menu": {
+      "type": "select", "default":"0", "group": "header", "title": "User menu",
+      "options": {"0":"Hidden", "1":"Always Visible", "2":"Visible (Logged-in Only)"}
+    },
+    "primary-color": {
+      "type": "color", "default":"#207AB7", "input_type": "color-input", "group": "colors"
+    },
+    "accent-color": {
+      "type": "color", "default":"#0571c7", "input_type": "color-input", "group": "colors"
+    },
+    "heading-font": {
+      "type": "google-font", "default":"Roboto Condensed", "group": "fonts"
+    },
+    "heading-color": {
+      "type": "color", "default":"#ED6D1C", "input_type": "color-input",
+      "group": ["fonts", "colors"]
+    },
+    "body-font": {
+      "label":"Text font",
+      "type": "google-font", "default":"Roboto", "group": "fonts"
+    },
+    "body-color": {
+      "label":"Text color",
+      "type": "color", "default":"#207AB7", "input_type": "color-input",
+      "group": ["fonts", "colors"]
+    },
+    "fonts": {
+      "type": "google-fonts", "group": "fontlist"
+    },
+    "footer-text": {
+      "type":"text", "group": "footer",
+      "allow_tags": "<i><b><u><sup><sub>"
+    },
+    "footer-facebook": {
+      "title":"Facebook URL", "group": "footer"
+    },
+    "footer-twitter": {
+      "title":"Twitter URL", "group": "footer"
+    },
+    "footer-instagram": {
+      "title":"Instagram URL", "group": "footer"
+    },
+    "footer-linkedin": {
+      "title":"Linkedin URL", "group": "footer"
+    },
+    "footer-background-color": {
+      "type": "color", "input_type": "color-input",
+      "group": "footer", "title": "Background color",
+      "default":"#FFFFFF",
+      "palette":["var(--main-primary-color)","var(--main-a-color)","var(--hcolor)","var(--bcolor)"]
+    },
+    "footer-color": {
+      "type": "color", "input_type": "color-input",
+      "group": "footer", "title": "Text color",
+      "default":"#FFFFFF",
+      "palette":["var(--main-primary-color)","var(--main-a-color)","var(--hcolor)","var(--bcolor)"]
+    },
+    "footer-links": {
+      "title":"Links", "group": "footer",
+      "type":"list","default":[],
+      "fields":{
+        "text":[],"url":[]
+      }
+    },
+    "footer-seperator": {
+      "type": "checkbox",
+      "group": "footer",
+      "default": 0
+    },
+    "page-background": {
+      "type": "media2", "group": "page"
+    },
+    "page-background-color": {
+      "type": "color", "input_type": "color-input", "group": ["page", "colors"],
+      "default":"#FFFFFF"
+    },
+    "attachment": {
+      "title": "Background attachment",
+      "type": "radio",
+      "options": {"":"No", "fixed": "Fixed"},
+      "group": "page"
+    },
+    "page-width": {
+      "type":"radio", "title":"Width",
+      "default":"container-fluid", "group": "page",
+      "options": {"container-fluid":"Fluid","container-lg":"Boxed"}
+    },
+    "css": {
+      "label": "Custom CSS",
+      "input_type": "codemirror", "group": "stylesheet"
+    },
+    "btn-color": {
+      "type":"color", "default":"var(--hcolor)", "input_type": "color-input", "group": "btn",
+      "palette":["var(--main-primary-color)","var(--main-a-color)","var(--hcolor)","var(--bcolor)"]
+    },
+    "btn-font-size": {
+      "title": "Font size",
+      "group": "btn",
+      "type": "range",
+      "default": "16",
+      "min": 8,
+      "step": 1,
+      "max": 32
+    },
+    "btn-padding": {
+      "title": "Padding",
+      "group": "btn",
+      "type": "range",
+      "default": "8",
+      "min": 8,
+      "step": 1,
+      "max": 32
+    },
+    "btn-border-radius": {
+      "title": "Border radius",
+      "group": "btn",
+      "type": "range",
+      "default": "6",
+      "min": 0,
+      "step": 1,
+      "max": 40
+    },
+    "wa.phone": {
+      "label": "Phone",
+      "helptext": "The whatsapp number of your business",
+      "helptext_es": "El número de whatsapp de tu negocio",
+      "input_type": "xxxxxxxxxx", "group": "wa"
+    },
+    "wa.tochat_key": {
+      "label": "Tochat.be key",
+      "helptext": "You can replace the button with a widget created from <a target=_blank href=https://services.tochat.be/register/gilacms>tochat.be</a>",
+      "helptext_es": "Puedes reemplazar el botón con un widget creado a partir de <a target=_blank href=https://services.tochat.be/register/gilacms>tochat.be</a>",
+      "placeholder": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", "group": "wa"
+    },
+    "wa.txt": {
+      "label": "Message",
+      "placeholder": "Hola estoy interesado a un producto", "group": "wa"
+    },
+    "wa.active": {
+      "label": "Active",
+      "input_type": "checkbox", "group": "wa"
+    },
+    "wa.pos": {
+      "label": "Position",
+      "input_type": "radio", "options": {"left": "Left", "right": "Right"}, "group": "wa"
+    }
+  }
+}
